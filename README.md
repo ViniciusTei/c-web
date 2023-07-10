@@ -73,6 +73,12 @@ Content-Type: text/plain
 404 Not Found
 ```
 
+Similar to a client request, a server response is formed of text directives, separated by CRLF, though divided into three blocks.
+
+- Status line
+- HTTP Headers
+- Data block
+
 If you've ever looked in the Network panel of your web browser's debugger, some of these headers might look familiar.
 
 Important things to note:
@@ -84,3 +90,9 @@ Important things to note:
 * Even if your request has no body, a blank line still **must** appear after the header.
 * `Connection: close` tells the web browser that the TCP connection will be closed after this response. This should be included.
 * The `Date` should be the date right now, but this field is optional.
+
+## Connection management in HTTP/1.x
+
+In HTTP/1.x, there are several models: short-lived connections, persistent connections and HTTP pipelines. In our case, for simplicityu we are goint to implement the short-lived one.
+
+The original model of HTTP, and the default one in HTTP/1.0, is short-lived connections. 

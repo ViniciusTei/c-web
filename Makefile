@@ -31,6 +31,9 @@ main.o: $(SRC)/main.c
 net.o: $(SRC)/net.c
 	$(CC) -c $(SRC)/net.c -o $(OBJ)/net.o
 
+file.o: $(SRC)/file.c
+	$(CC) -c $(SRC)/file.c -o $(OBJ)/file.o
+
 run:
 	$(BIN)/$(TARGET)
 
