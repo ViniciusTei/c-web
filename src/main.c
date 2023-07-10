@@ -32,6 +32,7 @@ int send_http_response(int fd, int code, char *headers, char *content_type, char
    
     if(content_type == NULL) {
         //set default content type
+        content_type = (char*) malloc((strlen("text/plain") + 1)*sizeof(char));
         strcpy(content_type, "text/plain");
     }
 
@@ -42,13 +43,13 @@ int send_http_response(int fd, int code, char *headers, char *content_type, char
     //create a helper to tranlate most http codes
     switch (code) {
         case 200:
-            strcat(response, "200 OK\n\0");
+            strcat(response, "200 OK\n");
         break;
         case 404:
-            strcat(response, "404 NOT FOUND\n\0");
+            strcat(response, "404 NOT FOUND\n");
         break;
         default:
-            strcat(response, "500 INTERNAL ERROR\n\0");
+            strcat(response, "500 INTERNAL ERROR\n");
         break;
     }
 
@@ -73,6 +74,8 @@ int send_http_response(int fd, int code, char *headers, char *content_type, char
     //append correct body, for now only supports plain text
    
     strcat(response, body);
+
+    response_len = strlen(response);
 
     printf("RESPONSE:\n%s", response);
 
@@ -115,7 +118,10 @@ void handle_http_request(int fd, void *cache) {
 
     // (Stretch) If POST, handle the post request
     printf("REQUEST:\n %s\n\n", request);
-    send_http_response(fd, 404, NULL, "text/plain", "NOT FOUND", sizeof("NOT FOUND"));
+    char *body;
+    body = (char*) malloc((strlen("NOT FOUND") + 1) * sizeof(char));
+    strcpy(body, "NOT FOUND");
+    send_http_response(fd, 404, NULL, NULL, body, strlen(body));
 }
 
 int main(void) {
