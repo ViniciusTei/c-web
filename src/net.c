@@ -197,26 +197,39 @@ void handle_http_request(int fd, void *cache) {
   //    Otherwise serve the requested file by calling get_file()
 
   // (Stretch) If POST, handle the post request
-  printf("REQUEST:\n %s\n\n", request);
 
   char method[5], uri[126], *line;
 
   line = strtok(request, " ");
   strcpy(method, line);
-  line = strtok(NULL, line);
+  line = strtok(NULL, " ");
 
   strcpy(uri, line);
 
-  printf("%s %s\n", method, uri);
-  resp_404(fd);
+  if (strcmp(method, "GET\0") == 0) {
+    if (strcmp(uri, "/\0") == 0) {
+      resp_file(fd, "./src/files/index.html");
+    } else {
+      resp_file(fd, NULL);
+    }
+  } else {
+    resp_file(fd, NULL);
+  }
 }
 
-void resp_404(int fd) {
+void resp_file(int fd, char *filename) {
   char filepath[4096];
   struct file_data *filedata;
   char *mime_type;
 
-  snprintf(filepath, sizeof filepath, "./src/files/404.html");
+  int statusCode = 200;
+
+  if (filename == NULL) {
+    snprintf(filepath, sizeof filepath, "./src/files/404.html");
+    statusCode = 404;
+  } else {
+    strcpy(filepath, filename);
+  }
 
   filedata = file_load(filepath);
 
@@ -224,9 +237,11 @@ void resp_404(int fd) {
     char *body;
     body = (char *)malloc((strlen("NOT FOUND") + 1) * sizeof(char));
     strcpy(body, "NOT FOUND");
-    send_http_response(fd, 404, NULL, NULL, body, strlen(body));
+    statusCode = 404;
+    send_http_response(fd, statusCode, NULL, NULL, body, strlen(body));
     return;
   }
 
-  send_http_response(fd, 404, NULL, NULL, filedata->data, filedata->size);
+  send_http_response(fd, statusCode, NULL, NULL, filedata->data,
+                     filedata->size);
 }

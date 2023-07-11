@@ -20,6 +20,6 @@ int get_listener_socket(char *port);
 void handle_http_request(int fd, void *cache);
 int send_http_response(int fd, int code, char *headers, char *content_type,
                        void *body, int content_len);
-void resp_404(int fd);
+void resp_file(int fd, char *filename);
 
 #endif // !_NET_H_
